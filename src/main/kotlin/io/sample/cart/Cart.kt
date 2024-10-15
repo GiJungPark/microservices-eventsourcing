@@ -1,18 +1,23 @@
 package io.sample.cart
 
+import io.sample.cart.event.ItemAdded
+import io.sample.cart.event.ItemRemoved
+import io.sample.cart.event.QuantityChanged
+
 class Cart(
     private val cartId: String,
     private val items: MutableList<Item> = mutableListOf(),
+    private val events: MutableList<Any> = mutableListOf(),
 ) {
-    fun addItem(productNo: String, productName: String, quantity: Int) {
+    fun addItem(itemAdded: ItemAdded) {
         // TODO
     }
 
-    fun changeQuantity(productNo: String, quantity: Int) {
+    fun changeQuantity(quantityChanged: QuantityChanged) {
         // TODO
     }
 
-    fun removeItem(productNo: String) {
+    fun removeItem(itemRemoved: ItemRemoved) {
         // TODO
     }
 }
