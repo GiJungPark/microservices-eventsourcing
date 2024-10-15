@@ -1,4 +1,4 @@
-package io.sample.cart
+package io.sample.cart.aggregate
 
 import io.sample.cart.event.ItemAdded
 import io.sample.cart.event.ItemRemoved

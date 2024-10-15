@@ -1,4 +1,4 @@
-package io.sample.cart
+package io.sample.cart.aggregate
 
 class Product(
     private val no: String,
