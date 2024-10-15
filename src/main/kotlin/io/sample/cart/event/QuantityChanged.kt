@@ -1,11 +1,15 @@
 package io.sample.cart.event
 
+import kotlinx.serialization.Serializable
 import java.util.*
 
-class QuantityChanged (
-    private val eventId: String = UUID.randomUUID().toString(),
-    private val time: Long = System.currentTimeMillis(),
-
-    private val productNo: String,
+@Serializable
+class QuantityChanged : Event {
+    private val productNo: String
     private val quantity: Int
-)
+
+    constructor(productNo: String, quantity: Int) {
+        this.productNo = productNo
+        this.quantity = quantity
+    }
+}

@@ -22,8 +22,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    runtimeOnly("com.h2database:h2")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

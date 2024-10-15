@@ -42,3 +42,4 @@ out/
 ### etc ###
 gradlew.bat
 gradlew
+!**/*.yml
