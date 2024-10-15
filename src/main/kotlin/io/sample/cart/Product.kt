@@ -1,9 +1,11 @@
 package io.sample.cart
 
-class Product (
+class Product(
     private val no: String,
     private val name: String,
-    private val price: Int
+    private val price: Int,
 ) {
-
+    fun getNo(): String {
+        return no
+    }
 }
