@@ -4,10 +4,11 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 @Serializable
-class ItemRemoved : Event {
-    private val productNo: String
+class ItemRemoved(
+    val cartId: String,
 
-    constructor(productNo: String) {
-        this.productNo = productNo
-    }
-}
+    val productNo: String,
+
+    override val eventId: String = UUID.randomUUID().toString(),
+    override val time: Long = System.currentTimeMillis(),
+) : Event()

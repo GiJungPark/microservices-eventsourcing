@@ -4,12 +4,12 @@ import kotlinx.serialization.Serializable
 import java.util.*
 
 @Serializable
-class QuantityChanged : Event {
-    private val productNo: String
-    private val quantity: Int
+class QuantityChanged(
+    val cartId: String,
 
-    constructor(productNo: String, quantity: Int) {
-        this.productNo = productNo
-        this.quantity = quantity
-    }
-}
+    val productNo: String,
+    val quantity: Int,
+
+    override val eventId: String = UUID.randomUUID().toString(),
+    override val time: Long = System.currentTimeMillis(),
+) : Event()
