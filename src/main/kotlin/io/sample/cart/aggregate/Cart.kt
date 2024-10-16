@@ -1,5 +1,8 @@
 package io.sample.cart.aggregate
 
+import io.sample.cart.command.AddItem
+import io.sample.cart.command.ChangeQuantity
+import io.sample.cart.command.RemoveItem
 import io.sample.cart.event.Event
 import io.sample.cart.event.ItemAdded
 import io.sample.cart.event.ItemRemoved
@@ -13,37 +16,42 @@ class Cart(
     private val events: MutableList<Event> = mutableListOf(),
 ) {
 
-    fun addItem(productNo: String, productName: String, price: Int, quantity: Int) {
-        val product = Product(no = productNo, name = productName, price = price)
-        val item = Item(product = product, quantity = quantity)
+    fun addItem(command: AddItem) {
+        val product = Product(no = command.productNo, name = command.productName, price = command.price)
+        val item = Item(product = product, quantity = command.quantity)
         items.add(item)
 
-        val event =
-            ItemAdded(cartId, productNo = productNo, productName = productName, price = price, quantity = quantity)
+        val event = ItemAdded(
+            cartId = cartId,
+            productNo = command.productNo,
+            productName = command.productName,
+            price = command.price,
+            quantity = command.quantity
+        )
         events.add(event)
     }
 
-    fun changeQuantity(productNo: String, quantity: Int) {
-        val foundItem = findItem(productNo)
+    fun changeQuantity(command: ChangeQuantity) {
+        val foundItem = findItem(command.productNo)
         if (foundItem.isEmpty) {
             return
         }
 
-        foundItem.get().setQuantity(quantity)
+        foundItem.get().setQuantity(command.quantity)
 
-        val event = QuantityChanged(productNo = productNo, quantity = quantity)
+        val event = QuantityChanged(productNo = command.productNo, quantity = command.quantity)
         events.add(event)
     }
 
-    fun removeItem(productNo: String) {
-        val foundItem = findItem(productNo)
+    fun removeItem(command: RemoveItem) {
+        val foundItem = findItem(command.productNo)
         if (foundItem.isEmpty) {
             return
         }
 
         items.remove(foundItem.get())
 
-        val event = ItemRemoved(productNo = productNo)
+        val event = ItemRemoved(productNo = command.productNo)
         events.add(event)
     }
 
