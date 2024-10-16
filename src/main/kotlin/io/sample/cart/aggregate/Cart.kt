@@ -12,23 +12,49 @@ import java.util.*
 
 class Cart(
     private val cartId: String,
-    private val items: MutableList<Item> = mutableListOf(),
-    private val events: MutableList<Event> = mutableListOf(),
+    private var items: MutableList<Item> = mutableListOf(),
+    internal var events: MutableList<Event> = mutableListOf(),
 ) {
 
-    fun addItem(command: AddItem) {
-        val product = Product(no = command.productNo, name = command.productName, price = command.price)
-        val item = Item(product = product, quantity = command.quantity)
-        items.add(item)
+    fun apply(event: Event) {
+        apply(event, true);
+    }
 
-        val event = ItemAdded(
-            cartId = cartId,
-            productNo = command.productNo,
-            productName = command.productName,
-            price = command.price,
-            quantity = command.quantity
-        )
-        events.add(event)
+    fun apply(event: Event, isNew: Boolean) {
+        val handler = javaClass.getDeclaredMethod("on", event.javaClass)
+
+        if (handler != null) {
+            handler.setAccessible(true)
+            handler.invoke(this, event)
+            if (isNew) {
+                events.add(event)
+            }
+        }
+    }
+
+    fun addItem(command: AddItem) {
+        if (!containsItem(command.productNo)) {
+            val event = ItemAdded(
+                cartId = command.cartId,
+                productNo = command.productNo,
+                productName = command.productName,
+                price = command.price,
+                quantity = command.quantity
+            )
+
+            apply(event)
+        }
+    }
+
+    private fun on(event: ItemAdded) {
+        val product = Product(no = event.productNo, name = event.productName, price = event.price)
+        val item = Item(product = product, quantity = event.quantity)
+        items.add(item)
+    }
+
+    private fun containsItem(productNo: String): Boolean {
+        return !this.items.stream().filter { item -> productNo == item.getProduct().getNo() }
+            .findFirst().isEmpty
     }
 
     fun changeQuantity(command: ChangeQuantity) {
@@ -37,10 +63,17 @@ class Cart(
             return
         }
 
-        foundItem.get().setQuantity(command.quantity)
+        val event = QuantityChanged(cartId = cartId, productNo = command.productNo, quantity = command.quantity)
 
-        val event = QuantityChanged(productNo = command.productNo, quantity = command.quantity)
-        events.add(event)
+        apply(event)
+    }
+
+    private fun on(event: QuantityChanged) {
+        val foundItem = findItem(event.productNo)
+
+        if (foundItem.isPresent) {
+            foundItem.get().setQuantity(event.quantity)
+        }
     }
 
     fun removeItem(command: RemoveItem) {
@@ -49,10 +82,16 @@ class Cart(
             return
         }
 
-        items.remove(foundItem.get())
+        val event = ItemRemoved(cartId = cartId, productNo = command.productNo)
+        apply(event)
+    }
 
-        val event = ItemRemoved(productNo = command.productNo)
-        events.add(event)
+    private fun on(event: ItemRemoved) {
+        val foundItem = findItem(event.productNo)
+
+        if (foundItem.isPresent) {
+            items.remove(foundItem.get())
+        }
     }
 
     fun getCartId(): String {
