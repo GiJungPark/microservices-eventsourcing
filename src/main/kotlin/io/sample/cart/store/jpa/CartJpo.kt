@@ -9,13 +9,17 @@ import jakarta.persistence.Table
 @Table(name = "TB_CART")
 class CartJpo {
     @Id
-    private val id: String
+    private val cartId: String
 
     constructor(cart: Cart) {
-        this.id = cart.getCartId();
+        this.cartId = cart.getCartId();
     }
 
     constructor() {
-        this.id = "";
+        this.cartId = "";
+    }
+
+    fun toCart(): Cart {
+        return Cart(cartId = cartId)
     }
 }
