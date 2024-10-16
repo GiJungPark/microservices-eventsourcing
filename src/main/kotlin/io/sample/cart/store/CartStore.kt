@@ -41,4 +41,8 @@ class CartStore(
 
         return foundCart
     }
+
+    fun exists(cartId: String): Boolean {
+        return cartRepository.existsById(cartId)
+    }
 }

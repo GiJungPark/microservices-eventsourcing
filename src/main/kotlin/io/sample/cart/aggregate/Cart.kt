@@ -2,46 +2,25 @@ package io.sample.cart.aggregate
 
 import io.sample.cart.command.AddItem
 import io.sample.cart.command.ChangeQuantity
+import io.sample.cart.command.CreateCart
 import io.sample.cart.command.RemoveItem
-import io.sample.cart.event.Event
-import io.sample.cart.event.ItemAdded
-import io.sample.cart.event.ItemRemoved
-import io.sample.cart.event.QuantityChanged
+import io.sample.cart.event.*
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 
-class Cart(
-    private val cartId: String,
-    private var items: MutableList<Item> = mutableListOf(),
-    internal var events: MutableList<Event> = mutableListOf(),
-) {
+class Cart(command: CreateCart) {
 
-    fun apply(event: Event) {
-        apply(event, true);
+    private lateinit var cartId: String
+    private var items: MutableList<Item> = mutableListOf()
+    var events: MutableList<Event> = mutableListOf()
+
+    init {
+        apply(CartCreated(cartId = command.cartId))
     }
 
-    fun apply(event: Event, isNew: Boolean) {
-        try {
-            val handler = javaClass.getDeclaredMethod("on", event.javaClass)
-
-            if (handler != null) {
-                handler.setAccessible(true)
-                handler.invoke(this, event)
-                if (isNew) {
-                    events.add(event)
-                }
-            }
-        } catch (e: NoSuchMethodException) {
-            e.printStackTrace()
-            // TODO: 예외 처리
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-            // TODO: 예외 처리
-        } catch (e: InvocationTargetException) {
-            e.printStackTrace()
-            // TODO: 예외 처리
-        }
+    private fun on(event: CartCreated) {
+        cartId = event.cartId
     }
 
     fun addItem(command: AddItem) {
@@ -103,6 +82,33 @@ class Cart(
 
         if (foundItem.isPresent) {
             items.remove(foundItem.get())
+        }
+    }
+
+    fun apply(event: Event) {
+        apply(event, true);
+    }
+
+    fun apply(event: Event, isNew: Boolean) {
+        try {
+            val handler = javaClass.getDeclaredMethod("on", event.javaClass)
+
+            if (handler != null) {
+                handler.setAccessible(true)
+                handler.invoke(this, event)
+                if (isNew) {
+                    events.add(event)
+                }
+            }
+        } catch (e: NoSuchMethodException) {
+            e.printStackTrace()
+            // TODO: 예외 처리
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+            // TODO: 예외 처리
+        } catch (e: InvocationTargetException) {
+            e.printStackTrace()
+            // TODO: 예외 처리
         }
     }
 
