@@ -114,6 +114,10 @@ class Cart(
         return this.events
     }
 
+    fun getItems(): List<Item> {
+        return this.items
+    }
+
     private fun findItem(productNo: String): Optional<Item> {
         return items.stream().filter { item: Item -> productNo == item.getProduct().getNo() }.findFirst()
     }
