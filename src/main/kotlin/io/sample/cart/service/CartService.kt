@@ -1,10 +1,7 @@
 package io.sample.cart.service
 
 import io.sample.cart.aggregate.Cart
-import io.sample.cart.command.AddItem
-import io.sample.cart.command.ChangeQuantity
-import io.sample.cart.command.CreateCart
-import io.sample.cart.command.RemoveItem
+import io.sample.cart.command.*
 import io.sample.cart.store.CartStore
 
 class CartService(
@@ -45,6 +42,14 @@ class CartService(
         val foundCart = cartStore.load(command.cartId) ?: throw IllegalArgumentException("Product not found")
 
         foundCart.removeItem(command)
+
+        cartStore.save(foundCart)
+    }
+
+    fun removeCart(command: RemoveCart) {
+        val foundCart = cartStore.load(command.cartId) ?: throw IllegalArgumentException("Product not found")
+
+        foundCart.removeCart()
 
         cartStore.save(foundCart)
     }

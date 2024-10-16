@@ -12,8 +12,9 @@ import java.util.*
 class Cart(command: CreateCart) {
 
     private lateinit var cartId: String
+    private var deleted: Boolean = false
     private var items: MutableList<Item> = mutableListOf()
-    var events: MutableList<Event> = mutableListOf()
+    private var events: MutableList<Event> = mutableListOf()
 
     init {
         apply(CartCreated(cartId = command.cartId))
@@ -85,6 +86,14 @@ class Cart(command: CreateCart) {
         }
     }
 
+    fun removeCart() {
+        apply(CartRemoved(cartId))
+    }
+
+    private fun on(event: CartRemoved) {
+        markDelete()
+    }
+
     fun apply(event: Event) {
         apply(event, true);
     }
@@ -110,6 +119,10 @@ class Cart(command: CreateCart) {
             e.printStackTrace()
             // TODO: 예외 처리
         }
+    }
+
+    private fun markDelete() {
+        deleted = true
     }
 
     fun getCartId(): String {
