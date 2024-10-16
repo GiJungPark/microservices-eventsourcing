@@ -7,6 +7,7 @@ import io.sample.cart.event.Event
 import io.sample.cart.event.ItemAdded
 import io.sample.cart.event.ItemRemoved
 import io.sample.cart.event.QuantityChanged
+import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 
@@ -21,14 +22,25 @@ class Cart(
     }
 
     fun apply(event: Event, isNew: Boolean) {
-        val handler = javaClass.getDeclaredMethod("on", event.javaClass)
+        try {
+            val handler = javaClass.getDeclaredMethod("on", event.javaClass)
 
-        if (handler != null) {
-            handler.setAccessible(true)
-            handler.invoke(this, event)
-            if (isNew) {
-                events.add(event)
+            if (handler != null) {
+                handler.setAccessible(true)
+                handler.invoke(this, event)
+                if (isNew) {
+                    events.add(event)
+                }
             }
+        } catch (e: NoSuchMethodException) {
+            e.printStackTrace()
+            // TODO: 예외 처리
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+            // TODO: 예외 처리
+        } catch (e: InvocationTargetException) {
+            e.printStackTrace()
+            // TODO: 예외 처리
         }
     }
 
