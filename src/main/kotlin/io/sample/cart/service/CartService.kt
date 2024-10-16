@@ -10,6 +10,8 @@ class CartService(
 ) {
 
     fun addItem(command: AddItem) {
+        command.validate()
+
         val foundCart = cartStore.load(command.cartId) ?: throw IllegalArgumentException("Product not found")
 
         foundCart.addItem(command)
@@ -18,6 +20,8 @@ class CartService(
     }
 
     fun changeQuantity(command: ChangeQuantity) {
+        command.validate()
+
         val foundCart = cartStore.load(command.cartId) ?: throw IllegalArgumentException("Product not found")
 
         foundCart.changeQuantity(command)
@@ -26,9 +30,11 @@ class CartService(
     }
 
     fun removeItem(command: RemoveItem) {
+        command.validate()
+
         val foundCart = cartStore.load(command.cartId) ?: throw IllegalArgumentException("Product not found")
 
-        foundCart.removeItem(productNo = command.productNo)
+        foundCart.removeItem(command)
 
         cartStore.save(foundCart)
     }
