@@ -9,15 +9,19 @@ import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 
-class Cart(command: CreateCart) {
+class Cart {
 
     private lateinit var cartId: String
     private var deleted: Boolean = false
     private var items: MutableList<Item> = mutableListOf()
     private var events: MutableList<Event> = mutableListOf()
 
-    init {
+    constructor(command: CreateCart) {
         apply(CartCreated(cartId = command.cartId))
+    }
+
+    constructor(cartId: String) {
+        this.cartId = cartId
     }
 
     private fun on(event: CartCreated) {
